@@ -6,7 +6,7 @@ directive = (name, conf) ->
   m.directive(name, conf)
 
 directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $timeout) ->
-  link  = (scope, element, attrs, ctrl) ->
+  link = (scope, element, attrs, ctrl) ->
     _u = n3utils
     dispatch = _u.getEventDispatcher()
     id = _u.uuid()
@@ -39,8 +39,8 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
       fn = (key) -> (options.series.filter (s) -> s.axis is key and s.visible isnt false).length > 0
 
       axes = _u
-        .createAxes(svg, dimensions, options.axes)
-        .andAddThemIf({
+      .createAxes(svg, dimensions, options.axes)
+      .andAddThemIf({
           all: !isThumbnail
           x: true
           y: fn('y')
@@ -58,6 +58,8 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
       if options.drawLegend
         _u.drawLegend(svg, options.series, dimensions, handlers, dispatch)
+      else
+        _u.updateVisibility(svg, options.series)
 
       if options.tooltip.mode is 'scrubber'
         _u.createGlass(svg, dimensions, handlers, axes, dataPerSeries, options, dispatch, columnWidth)
@@ -69,7 +71,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
     updateEvents = ->
 
-      # Deprecated: this will be removed in 2.x
+# Deprecated: this will be removed in 2.x
       if scope.oldclick
         dispatch.on('click', scope.oldclick)
       else if scope.click
@@ -106,7 +108,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
     $window.addEventListener('resize', window_resize)
 
     scope.$watch('data', scope.redraw, true)
-    scope.$watch('options', scope.redraw , true)
+    scope.$watch('options', scope.redraw, true)
     scope.$watchCollection('[click, hover, focus, toggle]', updateEvents)
 
     # Deprecated: this will be removed in 2.x
@@ -120,15 +122,15 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
     return
 
   return {
-    replace: true
-    restrict: 'E'
-    scope:
-      data: '=', options: '=',
-      # Deprecated: this will be removed in 2.x
-      oldclick: '=click',  oldhover: '=hover',  oldfocus: '=focus',
-      # Events
-      click: '=onClick',  hover: '=onHover',  focus: '=onFocus',  toggle: '=onToggle'
-    template: '<div></div>'
-    link: link
+  replace: true
+  restrict: 'E'
+  scope:
+    data: '=', options: '=',
+# Deprecated: this will be removed in 2.x
+    oldclick: '=click', oldhover: '=hover', oldfocus: '=focus',
+# Events
+    click: '=onClick', hover: '=onHover', focus: '=onFocus', toggle: '=onToggle'
+  template: '<div></div>'
+  link: link
   }
 ])
